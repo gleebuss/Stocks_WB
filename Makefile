@@ -1,2 +1,2 @@
 all:
-	streamlit run main.py
+	streamlit run entry.py

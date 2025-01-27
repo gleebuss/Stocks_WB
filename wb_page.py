@@ -2,9 +2,8 @@ import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from FilteredTableMerger import FilteredTableMerger
 
-# Артикул поставщика оставить или удалить
-
 def load_files():
+    st.session_state.clear()
     required_files = ["sales_xlsx", "markup_xlsx", "goods_exclude_xlsx"]
 
     if all(st.session_state.get(key) is not None for key in required_files):
@@ -111,5 +110,4 @@ def main():
         st.warning("Пожалуйста, загрузите все необходимые файлы.")
 
 
-if __name__ == '__main__':
-    main()
+main()
