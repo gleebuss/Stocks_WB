@@ -17,7 +17,6 @@ class OzonTable:
 
         self.first_sheets = pd.read_excel(goods_exclude_xlsx, sheet_name=0)
         self.second_header = pd.read_excel(goods_exclude_xlsx, sheet_name=1, nrows=2)
-        print(self.second_header)
         self.second_table = goods_exclude_df
         xls = pd.ExcelFile(goods_exclude_xlsx)
         self.name_sheets = xls.sheet_names[1]
@@ -32,7 +31,14 @@ class OzonTable:
                                   right_on='Оригинальный номер', how='left')
         self.merged_df = pd.merge(self.merged_df, sales_df, on='Артикул', how='left')
 
-        self.merged_df['Result'] = (self.merged_df["Рассчитанная цена для участия в акции, RUB"] - self.merged_df["Общая комиссия"]) * 100 / self.merged_df["Среднезакупочная"]
+        column_name = f"Итоговая цена по акции с {self.name_sheets.split(" ")[1]}, руб"
+        if column_name in self.merged_df.columns:
+            logger.info(f"Бустинг \n")
+        else:
+            column_name = "Рассчитанная цена для участия в акции, RUB"
+
+        self.merged_df["Среднезакупочная"] = self.merged_df["Среднезакупочная"].replace(0, 1).fillna(1)
+        self.merged_df['Result'] = (self.merged_df[column_name] - self.merged_df["Общая комиссия"] - self.merged_df["Среднезакупочная"]) * 100 / self.merged_df["Среднезакупочная"]
 
         logger.info(f"Всего строк {self.merged_df.shape[0]}.\n")
 
@@ -80,14 +86,9 @@ class OzonTable:
         date = self.name_sheets.split(" ")[1]
         tmp = self.second_table.copy()
         tmp["Участие товара в акции с " + date] = tmp.apply(
-            lambda row: "Да*" if row["Артикул"] in articles else "", axis=1
+            lambda row: "" if row["Артикул"] in articles else "Да*", axis=1
         )
-        columns_to_drop = ['Unnamed: 19', 'Unnamed: 20', 'Unnamed: 21',
-                           'Unnamed: 22', 'Unnamed: 23', 'Unnamed: 24',
-                           'Unnamed: 25', 'Unnamed: 26', 'Unnamed: 27',
-                           'Unnamed: 28', 'Unnamed: 29']
-
-        tmp.drop(columns=columns_to_drop, inplace=True)
+        # tmp.drop(tmp.columns[tmp.columns.str.contains('unnamed', case=False)], axis=1, inplace=True)
         # tmp = tmp.filter(items=self.required_headers)
 
         output_buffer_xlsx = io.BytesIO()
