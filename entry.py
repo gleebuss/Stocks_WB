@@ -2,8 +2,9 @@ import streamlit as st
 
 pages = {
     "Tools": [
-        st.Page("wb_page.py", title="WB", default=True),
-        st.Page("ozon_page.py", title="OZON"),
+        st.Page("./wb/wb_page.py", title="WB", default=True),
+        st.Page("./ozon/ozon_page.py", title="OZON"),
+        st.Page("./ozon_v2/ozon_page_v2.py", title="OZON_V2"),
     ]
 }
 

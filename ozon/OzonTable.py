@@ -31,7 +31,7 @@ class OzonTable:
                                   right_on='Оригинальный номер', how='left')
         self.merged_df = pd.merge(self.merged_df, sales_df, on='Артикул', how='left')
 
-        column_name = f"Итоговая цена по акции с {self.name_sheets.split(" ")[1]}, руб"
+        column_name = f'Итоговая цена по акции с {self.name_sheets.split(" ")[1]}, руб'
         if column_name in self.merged_df.columns:
             logger.info(f"Бустинг \n")
         else:

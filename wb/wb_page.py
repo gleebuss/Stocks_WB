@@ -1,7 +1,6 @@
 import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
-from OzonTable import OzonTable
-
+from ozon.FilteredTableMerger import FilteredTableMerger
 
 def load_files():
     required_files = ["sales_xlsx", "markup_xlsx", "goods_exclude_xlsx"]
@@ -12,39 +11,39 @@ def load_files():
             markup_xlsx: UploadedFile = st.session_state["markup_xlsx"]
             goods_exclude_xlsx: UploadedFile = st.session_state["goods_exclude_xlsx"]
 
-            st.session_state['all_tables'] = OzonTable(sales_xlsx, markup_xlsx, goods_exclude_xlsx)
+            st.session_state['all_tables'] = FilteredTableMerger(sales_xlsx, markup_xlsx, goods_exclude_xlsx)
 
     return st.session_state.get('all_tables', None)
 
 
-def remove_percentage_order_limit(all_tables: OzonTable):
+def remove_percentage_order_limit(all_tables: FilteredTableMerger):
     if st.session_state["percentage"] is not None and st.session_state["order_limit"] is not None:
         percentage = int(st.session_state["percentage"])
         order_limit = int(st.session_state["order_limit"])
         all_tables.remove_by_percentage_order_limit(percentage, order_limit)
 
 
-def remove_brand(all_tables: OzonTable):
+def remove_brand(all_tables: FilteredTableMerger):
     if st.session_state["selected_brand"] is not None and st.session_state["percentage_brand"] is not None:
         percentage_brand = int(st.session_state["percentage_brand"])
         brand = st.session_state["selected_brand"]
         all_tables.remove_by_brand(percentage_brand, brand)
 
 
-def remove_category(all_tables: OzonTable):
+def remove_category(all_tables: FilteredTableMerger):
     if st.session_state["selected_item"] is not None and st.session_state["percentage_category"] is not None:
         percentage_category = int(st.session_state["percentage_category"])
         category = st.session_state["selected_item"]
         all_tables.remove_by_category(percentage_category, category)
 
 
-def remove_article(all_tables: OzonTable):
+def remove_article(all_tables: FilteredTableMerger):
     if st.session_state["selected_article"] is not None:
         selected_article = st.session_state["selected_article"]
         all_tables.remove_by_article(selected_article)
 
 
-def save_article(all_tables: OzonTable):
+def save_article(all_tables: FilteredTableMerger):
     if st.session_state["selected_article"] is not None:
         selected_article = st.session_state["selected_article"]
         all_tables.save_article(selected_article)
@@ -82,7 +81,6 @@ def display_filters(all_tables):
         st.button("Применить", on_click=remove_brand, args=(all_tables,), key="remove_brand_button")
         st.button("Применить", on_click=remove_category, args=(all_tables,), key="remove_category_button")
         st.button("Убрать из акции", on_click=save_article, args=(all_tables,), key="save_article_button")
-
 
 def main():
     all_tables = None
