@@ -35,6 +35,8 @@ class FilteredTableMerger:
                                       (self.merged_df['Цена продажи'] * self.merged_df[
                                           'Загружаемая скидка для участия в акции'] / 100))
                                      ) / self.merged_df['Среднезакупочная']) * 100
+        
+        self.cloned_merged_df = self.merged_df.copy()
 
         logger.info(f"Всего строк {self.merged_df.shape[0]}.\n")
 
@@ -84,6 +86,19 @@ class FilteredTableMerger:
         output_buffer_xlsx = io.BytesIO()
         with pd.ExcelWriter(output_buffer_xlsx, engine='xlsxwriter') as writer:
             tmp.to_excel(writer, index=False, sheet_name='Sheet1')
+
+        return output_buffer_xlsx.getvalue()
+    
+    def download_reverse_excel(self):
+        tmp = self.merged_df.copy()
+        tmp = tmp.filter(items=self.required_headers)
+
+        filtered = self.cloned_merged_df[~self.cloned_merged_df['Артикул поставщика'].isin(tmp['Артикул поставщика'])]
+        filtered = filtered.filter(items=self.required_headers)
+
+        output_buffer_xlsx = io.BytesIO()
+        with pd.ExcelWriter(output_buffer_xlsx, engine='xlsxwriter') as writer:
+            filtered.to_excel(writer, index=False, sheet_name='Sheet1')
 
         return output_buffer_xlsx.getvalue()
 

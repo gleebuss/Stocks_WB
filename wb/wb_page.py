@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
-from ozon.FilteredTableMerger import FilteredTableMerger
+from wb.FilteredTableMerger import FilteredTableMerger
 
 def load_files():
     required_files = ["sales_xlsx", "markup_xlsx", "goods_exclude_xlsx"]
@@ -104,6 +104,12 @@ def main():
             label="Скачать файл",
             data=all_tables.download_excel(),
             file_name="output.xlsx",
+        )
+
+        st.download_button(
+            label="Скачать обратный файл",
+            data=all_tables.download_reverse_excel(),
+            file_name="reverse_output.xlsx",
         )
     else:
         st.warning("Пожалуйста, загрузите все необходимые файлы.")
