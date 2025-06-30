@@ -50,7 +50,7 @@ class OzonAPI:
 
         reader = PdfReader(stickers_pdf)
 
-        pattern=r'\d{1,3}\s\d{8,10}-\d{3,4}-\d{1,2}'
+        pattern=r'\d{1,4}\s\d{8,12}-\d{3,6}-\d{1,2}'
         all_stickers = []
 
         for page in reader.pages:
